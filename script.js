@@ -4,16 +4,18 @@ const ctx = canvas.getContext("2d");
 canvas.width = 600;
 canvas.height = 300;
 
+let score = { red: 0, blue: 0 };
+
 let players = [
-    { x: 100, y: 100, width: 10, height: 60, dy: 0 }, // Player 1
-    { x: 500, y: 100, width: 10, height: 60, dy: 0 }  // Player 2
+    { x: 100, y: 100, width: 10, height: 60, dy: 0, color: "red" },  // Tim Merah
+    { x: 500, y: 100, width: 10, height: 60, dy: 0, color: "blue" }  // Tim Biru
 ];
 
 let ball = { x: 300, y: 150, radius: 10, dx: 3, dy: 2 };
 
 function drawPlayers() {
-    ctx.fillStyle = "blue";
     players.forEach(p => {
+        ctx.fillStyle = p.color;
         ctx.fillRect(p.x, p.y, p.width, p.height);
     });
 }
@@ -23,6 +25,17 @@ function drawBall() {
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fill();
+}
+
+function drawText() {
+    ctx.fillStyle = "white";
+    ctx.font = "14px Arial";
+    ctx.fillText("Dev:@imbativeiss", canvas.width / 2 - 50, 20);
+}
+
+function updateScore() {
+    document.getElementById("score1").innerText = score.red;
+    document.getElementById("score2").innerText = score.blue;
 }
 
 function updateGame() {
@@ -47,15 +60,27 @@ function updateGame() {
         }
     });
 
-    if (ball.x <= 0 || ball.x >= canvas.width) {
-        ball.x = 300;
-        ball.y = 150;
-        ball.dx *= -1;
+    if (ball.x <= 0) {
+        score.blue++;  
+        resetBall();
+    } else if (ball.x >= canvas.width) {
+        score.red++;  
+        resetBall();
     }
+
+    updateScore();
+}
+
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.dx = Math.random() > 0.5 ? 3 : -3;
+    ball.dy = Math.random() > 0.5 ? 2 : -2;
 }
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawText();
     drawPlayers();
     drawBall();
     updateGame();
